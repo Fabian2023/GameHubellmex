@@ -1,0 +1,154 @@
+body,
+html {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden
+}
+
+.droptext{
+  margin-top: 780px;
+  font-family: "FuturaPTMedium.otf";
+  font-size: 25px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@font-face {
+  font-family: "FuturaPTMedium.otf"; /* Nombre de la fuente */
+  src: url("../fonts/FuturaPTMedium.otf") format("opentype"); /* Ruta de la fuente */
+}
+
+.full-screen-imageDrops {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* Esto asegurará que la imagen cubra todo el contenedor sin distorsionarse */
+  
+}
+::selection {
+  background: transparent;
+}
+
+/*empieza diseño de efecto burbuja*/
+
+.gota,
+.numero10Img,
+.gota:focus,
+.gota:active,
+.gota:hover,
+.numero10Img:focus,
+.numero10Img:active,
+.numero10Img:hover {
+  outline: none;
+  background-color: transparent;
+  user-select: none; /* Evita la selección de texto */
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* Internet Explorer/Edge */
+}
+
+.gota {
+
+  background-size: cover;
+  background-position: center;
+  top:-200px;
+  opacity: 0.8;                       
+  position: absolute;
+  animation: gotas 3s linear infinite;
+  cursor: pointer;
+  background-color: transparent;
+  user-select: none; /* Evita la selección de texto */
+  outline: none; /* Elimina el borde de enfoque predeterminado */
+  
+
+}
+
+
+
+.gota:focus, .gota:active {
+  outline: none; /* Asegura que el borde de enfoque esté desactivado */
+  background-color: transparent; /* Asegura que no haya cambio de color de fondo */
+}
+
+.numero10Img {
+  user-select: none; /* Evita la selección de la imagen */
+  outline: none; /* Elimina el borde de enfoque */
+}
+
+.numero10Img:focus, .numero10Img:active {
+  outline: none; /* Asegura que el borde de enfoque esté desactivado */
+  background-color: transparent; /* Asegura que no haya cambio de color de fondo */
+}
+
+
+
+.gota:nth-child(1) {
+  width: 13vw;
+  height: 10vh;
+  left: 8%;
+  animation-duration: 2s;
+  animation-delay: 1s;
+}
+
+.gota:nth-child(2) {
+  width: 13vw;
+  height: 10vh;
+  left: 75%;
+  animation-duration: 2.5s;
+  animation-delay: 2s;
+}
+
+
+
+.gota:nth-child(4) {
+  width: 13vw;
+  height: 10vh;
+  left: 30%;
+  animation-duration: 2s;
+  animation-delay: 4s;
+}
+
+.gota:nth-child(5) {
+  width: 13vw;
+  height: 10vh;
+  left: 53%;
+  animation-duration: 3s;
+  animation-delay: 6s;
+}
+
+@keyframes gotas {
+  0% {
+    top: 70vh;
+    opacity: 0;
+  }
+  30% {
+    transform: translateX(30px);
+  }
+  50% {
+    opacity: 5.8;
+  }
+  100% {
+    top: 25vh;  /* aqui cambia la altura*/
+    opacity: 0;
+  }
+}
+.subtitle {
+  display: flex;
+  flex-direction: row;
+  justify-content: center; 
+  align-items: center;
+  margin-top: -1015px; /*aqui se sube o se bajan los subtitulos*/
+  font-family: "FuturaPTMedium.otf";
+  font-size: 28px;
+  margin-right: -22%; /*  Mover margen para ir cuadrando*/
+  gap:12%;
+  
+ 
+  
+}
+.subtitle p {
+  margin-right: 160px 
+    
+}
