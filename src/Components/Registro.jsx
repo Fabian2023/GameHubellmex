@@ -2,19 +2,35 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import registro from "../images/REGISTRO ID.png";
 import fondo from "../images/fondo.png";
+import {checkInServiceJs} from "../firebase/firebaseServiceJs"
+
 
 const Registro = () => {
   const [inputValue, setInputValue] = useState("");
-  const [error, setError] = useState(false); // Estado para manejar errores
-  const [isLoaded, setIsLoaded] = useState(false); // Estado para gestionar la carga
-  const navigate = useNavigate(); // Hook para la navegación
+  const [error, setError] = useState(false); 
+  const [isLoaded, setIsLoaded] = useState(false); 
+  const navigate = useNavigate(); 
 
-  const handleDivClick = () => {
-    if (inputValue === "1234") {
-      navigate("/game"); // Redirige a /game si el código es correcto
-    } else {
-      setError(true); // Muestra el error si el código es incorrecto
-    }
+  const handleDivClick =async () => {
+    const attending  = await   checkInServiceJs.getAttendeeByUserCode({userCode:inputValue})
+    console.log(attending);
+     //llamarlo para validar el cod
+     if   (attending === null) {
+         return setError(true); // Muestra el error si el código es incorrecto
+        } 
+        const userParticipation  = await checkInServiceJs.getUserParticipation({userCode:inputValue})
+
+        console.log(userParticipation.points);
+
+        localStorage.setItem("userCode", inputValue);
+        
+
+        checkInServiceJs.saveUserParticipation({userCode:inputValue, points:userParticipation?.points, newParticipation:true})
+
+        navigate ("/game",{state:{userCode:inputValue}})
+
+
+
   };
 
   // Controla cuando las imágenes principales están completamente cargadas
