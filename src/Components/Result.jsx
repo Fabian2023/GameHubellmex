@@ -31,6 +31,7 @@ const Result = () => {
 
   useEffect(() => {
     saveData()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const saveData = async () => {
@@ -38,12 +39,12 @@ const Result = () => {
       userCode,
     });
     if (previewParticipation.participationDateList.length === 1) {
-      checkInServiceJs.saveUserParticipation({
+        checkInServiceJs.saveUserParticipation({
         userCode,
-        points: Math.min(previewParticipation.points + score, 100), 
+        points: previewParticipation.points + score, 
       });
     }
-  };
+ };
 
   return (
     <div className="relative flex flex-col justify-center items-center h-screen">

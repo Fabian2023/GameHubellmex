@@ -20,12 +20,12 @@ const Registro = () => {
         } 
         const userParticipation  = await checkInServiceJs.getUserParticipation({userCode:inputValue})
 
-        console.log(userParticipation.points);
+        console.log(userParticipation?.points);
 
         localStorage.setItem("userCode", inputValue);
         
 
-        checkInServiceJs.saveUserParticipation({userCode:inputValue, points:userParticipation?.points, newParticipation:true})
+        checkInServiceJs.saveUserParticipation({userCode:inputValue, points:userParticipation?.points ??10, newParticipation:true})
 
         navigate ("/game",{state:{userCode:inputValue}})
 
