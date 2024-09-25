@@ -58,7 +58,7 @@ const Registro = () => {
           />
 
           <div
-            className="absolute top-[1180px] left-40 w-[750px] h-32 z-10 cursor-pointer"
+            className="absolute top-[1120px] left-16 w-[950px]  h-96 z-10 cursor-pointer"
             onClick={handleDivClick}
           ></div>
 
