@@ -2,35 +2,38 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import registro from "../images/REGISTRO ID.png";
 import fondo from "../images/fondo.png";
-import {checkInServiceJs} from "../firebase/firebaseServiceJs"
-
+import { checkInServiceJs } from "../firebase/firebaseServiceJs";
 
 const Registro = () => {
   const [inputValue, setInputValue] = useState("");
-  const [error, setError] = useState(false); 
-  const [isLoaded, setIsLoaded] = useState(false); 
-  const navigate = useNavigate(); 
+  const [error, setError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+  const navigate = useNavigate();
 
-  const handleDivClick =async () => {
-    const attending  = await   checkInServiceJs.getAttendeeByUserCode({userCode:inputValue})
+  const handleDivClick = async () => {
+    const attending = await checkInServiceJs.getAttendeeByUserCode({
+      userCode: inputValue,
+    });
     console.log(attending);
-     //llamarlo para validar el cod
-     if   (attending === null) {
-         return setError(true); // Muestra el error si el código es incorrecto
-        } 
-        const userParticipation  = await checkInServiceJs.getUserParticipation({userCode:inputValue})
+    //llamarlo para validar el cod
+    if (attending === null) {
+      return setError(true); // Muestra el error si el código es incorrecto
+    }
+    const userParticipation = await checkInServiceJs.getUserParticipation({
+      userCode: inputValue,
+    });
 
-        console.log(userParticipation?.points);
+    console.log(userParticipation?.points);
 
-        localStorage.setItem("userCode", inputValue);
-        
+    localStorage.setItem("userCode", inputValue);
 
-        checkInServiceJs.saveUserParticipation({userCode:inputValue, points:userParticipation?.points ??10, newParticipation:true})
+    checkInServiceJs.saveUserParticipation({
+      userCode: inputValue,
+      points: userParticipation?.points ?? 10,
+      newParticipation: true,
+    });
 
-        navigate ("/game",{state:{userCode:inputValue}})
-
-
-
+    navigate("/game", { state: { userCode: inputValue } });
   };
 
   // Controla cuando las imágenes principales están completamente cargadas
@@ -57,17 +60,17 @@ const Registro = () => {
             className="absolute inset-0 w-full h-full object-cover z-0"
           />
 
-          <div
-            className="absolute top-[1120px] left-16 w-[950px]  h-96 z-10 cursor-pointer"
+          <button
+            className="absolute top-[1120px] left-16 w-[950px] h-96 z-10 cursor-pointer"
             onClick={handleDivClick}
-          ></div>
+          ></button>
 
           <div className="relative z-20 mt-48 flex flex-col justify-center items-center">
             <input
               type="text"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
-              className="mb-8 p-4 w-[720px] h-32 rounded-3xl text-center text-6xl border-2 border-gray-300 bg-gray-300"
+              className="mb-8 p-4 w-[500px] h-32 rounded-3xl text-center text-6xl border-2 border-gray-300 bg-gray-300"
               placeholder="Ingresa el código"
             />
             {error && (

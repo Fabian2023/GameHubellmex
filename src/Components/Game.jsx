@@ -1,33 +1,43 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import "./GameEfect.css";
 import obj1 from "../images/13.png";
 import obj2 from "../images/14.png";
 import obj3 from "../images/15.png";
 import obj4 from "../images/16.png";
-import obj5 from "../images/17.png";
-import obj6 from "../images/18.png";
-import obj7 from "../images/19.png";
-import obj8 from "../images/20T.png";
-import obj9 from "../images/21.png";
-import obj10 from "../images/22.png";
-import obj11 from "../images/23.png";
-import obj12 from "../images/24.png";
-
-
-import fondogame from "../images/JUEGO00 _ CONTEO.png";
+import fondogame from "../images/fondo.png";
 import uno from "../images/1.png";
 import dos from "../images/2.png";
 import tres from "../images/3.png";
 
-const Game = () => {
-  const [clicked, setClicked] = useState([false, false, false, false, false]);
-  const [score, setScore] = useState(0);
-  const [timeLeft, setTimeLeft] = useState(20);
-  const [countdown, setCountdown] = useState(3); // Temporizador inicial de 3 segundos
-  const [currentImage, setCurrentImage] = useState(0);
+// Componente para el efecto de explosión 💥
+// eslint-disable-next-line react/prop-types
+const ExplosionEffect = ({ x, y }) => (
+  <motion.div
+    initial={{ scale: 0, opacity: 1 }}
+    animate={{ scale: 5, opacity: 0 }}
+    transition={{ duration: 0.5, ease: "easeOut" }}
+    className="absolute w-12 h-12 md:w-20 md:h-20 bg-yellow-600 rounded-full"
+    style={{ top: y, left: x }}
+  />
+);
 
+const Game = () => {
   const navigate = useNavigate();
+  const images = [obj1, obj2, obj3, obj4];
+
+  const [activeDrops, setActiveDrops] = useState(
+    new Array(5).fill(null).map(() => ({
+      image: images[Math.floor(Math.random() * images.length)],
+      visible: true,
+    }))
+  );
+
+  const [score, setScore] = useState(0);
+  const [timeLeft, setTimeLeft] = useState(30);
+  const [countdown, setCountdown] = useState(3);
+  const [explosions, setExplosions] = useState([]); // Almacena explosiones activas
 
   useEffect(() => {
     if (countdown > 0) {
@@ -41,48 +51,41 @@ const Game = () => {
       const timer = setTimeout(() => setTimeLeft(timeLeft - 1), 1000);
       return () => clearTimeout(timer);
     } else if (timeLeft === 0) {
-      navigate("/result", {
-        state: { score, userCode: location.state?.userCode },
-      });
+      navigate("/result", { state: { score } });
     }
   }, [countdown, timeLeft, navigate, score]);
 
-  const handleClick = (index) => {
-    if (!clicked[index]) {
-      setScore((prevScore) => Math.min(prevScore + 2, 100)); // Limitar el puntaje a 100
-    }
+  const handleClick = (event, index) => {
+    console.log(`Click en gota ${index}`);
+    setScore((prev) => Math.min(prev + 2, 100));
 
-    setCurrentImage((prev) => (prev + 1) % 12);
+    // Captura la posición del clic para la explosión
+    const { clientX, clientY } = event;
+    setExplosions((prev) => [...prev, { id: Date.now(), x: clientX, y: clientY }]);
 
-    setClicked((prevClicked) =>
-      prevClicked.map((c, i) => (i === index ? true : c))
+    // Ocultar la gota clickeada
+    setActiveDrops((prevDrops) =>
+      prevDrops.map((drop, i) => (i === index ? { ...drop, visible: false } : drop))
     );
 
+    // Reaparecer la gota después de 1s con una nueva imagen
     setTimeout(() => {
-      setClicked((prevClicked) =>
-        prevClicked.map((c, i) => (i === index ? false : c))
+      setActiveDrops((prevDrops) =>
+        prevDrops.map((drop, i) =>
+          i === index
+            ? {
+                image: images[Math.floor(Math.random() * images.length)],
+                visible: true,
+              }
+            : drop
+        )
       );
     }, 1000);
-  };
 
-  const getImage = () => {
-    // Retornar el objeto correspondiente al índice actual
-    const images = [
-      obj1,
-      obj2,
-      obj3,
-      obj4,
-      obj5,
-      obj6,
-      obj7,
-      obj8,
-      obj9,
-      obj10,
-      obj11,
-      obj12,
-      
-    ];
-    return images[currentImage];
+    // Remover la explosión después de 500ms
+    setTimeout(() => {
+      setExplosions((prev) => prev.filter((exp) => exp.id !== Date.now()));
+    }, 500);
   };
 
   const getCountdownImage = () => {
@@ -99,6 +102,7 @@ const Game = () => {
         alt="Fondo de juego"
         className="absolute top-0 left-0 w-full h-full object-cover"
       />
+
       {countdown > 0 ? (
         <div className="countdown-container flex justify-center items-center">
           <img
@@ -106,8 +110,10 @@ const Game = () => {
             alt={`Número ${countdown}`}
             className="countdown-image"
             style={{
-              width: "300px",
-              height: "300px",
+              width: "30vw",
+              height: "30vw",
+              maxWidth: "300px",
+              maxHeight: "300px",
               position: "absolute",
               top: "50%",
               left: "50%",
@@ -117,30 +123,56 @@ const Game = () => {
         </div>
       ) : (
         <>
-          <div className="absolute top-96 left-0 right-0 flex justify-between  px-24   z-10">
-            <p className="text-5xl text-white mb-2 bg-[#FAC224] rounded-xl w-96 h-24 flex justify-center items-center font-semibold ">
-              Puntaje: {score}{" "}
+          {/* PUNTOS Y TIEMPO - ANIMADOS */}
+          <div className="absolute top-8 left-0 right-0 gap-8 flex justify-between px-6 sm:px-16 md:px-24 z-10">
+            <p className="text-2xl sm:text-4xl md:text-7xl text-black mb-2 bg-[#FAC224] rounded-xl w-[150px] sm:w-[200px] md:w-[450px] h-20 sm:h-24 md:h-28 flex justify-center items-center font-semibold">
+              Puntaje:{" "}
+              <motion.span
+                animate={{ scale: [1, 1.1, 1], opacity: [1, 0.8, 1] }}
+                transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
+                className="ml-2"
+              >
+                {score}
+              </motion.span>
             </p>
-            <p className="text-5xl text-white bg-[#FAC224] rounded-xl w-96 h-24 flex justify-center items-center font-semibold ">
-              Tiempo: {timeLeft}s
+            <p className="text-2xl sm:text-4xl md:text-7xl text-black bg-[#FAC224] rounded-xl w-[150px] sm:w-[300px] md:w-[450px] h-20 sm:h-24 md:h-28 flex justify-center items-center font-semibold">
+              Tiempo:{" "}
+              <motion.span
+                animate={{ scale: [1, 1.1, 1], opacity: [1, 0.8, 1] }}
+                transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
+                className="ml-2"
+              >
+                {timeLeft}s
+              </motion.span>
             </p>
           </div>
 
+          {/* GOTAS */}
           <div className="gotas">
-            {clicked.map((isClicked, index) => (
+            {activeDrops.map((drop, index) => (
               <div
                 key={index}
                 className="gota"
                 style={{
-                  backgroundImage: `url(${getImage()})`,
-                  opacity: isClicked ? 0 : 1,
-                  transform: isClicked ? "scale(0)" : "scale(1)",
-                  transition: "none", // Sin transición
+                  backgroundImage: `url(${drop.image})`,
+                  opacity: drop.visible ? 1 : 0,
+                  transform: drop.visible ? "scale(1)" : "scale(0)",
+                  transition: "opacity 0.3s, transform 0.3s",
+                  width: "20vw",  // Ajustar el tamaño de la gota
+                  height: "20vw", // Ajustar el tamaño de la gota
+                  maxWidth: "200px",
+                  maxHeight: "200px",
+                  cursor: "pointer",  // Cambiar el cursor para indicar que es clickeable
                 }}
-                onClick={() => handleClick(index)}
+                onClick={(e) => handleClick(e, index)}
               ></div>
             ))}
           </div>
+
+          {/* EXPLOSIONES */}
+          {explosions.map(({ id, x, y }) => (
+            <ExplosionEffect key={id} x={x} y={y} />
+          ))}
         </>
       )}
     </div>

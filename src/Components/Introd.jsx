@@ -15,7 +15,7 @@ const Introd = () => {
 
   const handleClick = () => {
     // Redirige a la ruta /registro al hacer clic en el video
-    navigate("/registro");
+    navigate("/game");
   };
 
   return (
